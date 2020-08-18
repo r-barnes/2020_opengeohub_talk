@@ -1,0 +1,39 @@
+rule all:
+  input: "results/distances_map.png"
+
+rule plot_distances:
+  input: "temp/building_distances.csv"
+  output: "results/distances_map.png"
+  shell:
+    """
+    mkdir -p temp/
+    Rscript scripts/plot_distances.R
+    """
+
+rule get_distances:
+  input: "data/stops.txt", "data/BUILDINGS.shp"
+  output: "temp/building_distances.csv"
+  shell:
+    """
+    mkdir -p temp/
+    python3 scripts/get_building_distances.py
+    """
+
+rule unpack_gtfs:
+  input:  "original_data/minneapolis_gtfs.zip"
+  output: "data/stops.txt"
+  shell:
+    """
+    mkdir -p data/
+    unzip -d data/ {input} stops.txt
+    """
+
+rule unpack_buildings:
+  input:  "original_data/minneapolis_buildings.zip"
+  output: "data/BUILDINGS.shp"
+  shell:
+    """
+    mkdir -p data/
+    unzip -d data/ {input}
+    """
+    
